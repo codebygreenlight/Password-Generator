@@ -431,4 +431,106 @@ function setupExportDropdown() {
             dropdown.classList.add('hidden');
         }
     });
-} 
+}
+
+// Add these at the start of the file
+let passcodeAttempts = 0;
+const MAX_ATTEMPTS = 3;
+
+// Initialize passcode handling
+function initPasscode() {
+    const hasPasscode = localStorage.getItem('passitPasscode');
+    const setupScreen = document.getElementById('setupPasscode');
+    const enterScreen = document.getElementById('enterPasscode');
+    
+    if (hasPasscode) {
+        setupScreen.classList.add('hidden');
+        enterScreen.classList.remove('hidden');
+    } else {
+        setupScreen.classList.remove('hidden');
+        enterScreen.classList.add('hidden');
+    }
+
+    // Set up input handling
+    setupPasscodeInputs();
+}
+
+function setupPasscodeInputs() {
+    const inputs = document.querySelectorAll('.passcode-input');
+    
+    inputs.forEach((input, index) => {
+        input.addEventListener('input', (e) => {
+            if (e.target.value.length === 1) {
+                if (index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+            }
+        });
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                inputs[index - 1].focus();
+            }
+        });
+    });
+}
+
+function setupPasscode() {
+    const inputs = document.querySelector('#setupPasscode').querySelectorAll('.passcode-input');
+    const passcode = Array.from(inputs).map(input => input.value).join('');
+    
+    if (passcode.length !== 4 || !/^\d+$/.test(passcode)) {
+        alert('Please enter a valid 4-digit passcode');
+        return;
+    }
+
+    // Hash the passcode before storing
+    const hashedPasscode = CryptoJS.SHA256(passcode).toString();
+    localStorage.setItem('passitPasscode', hashedPasscode);
+    
+    // Show success and switch to enter screen
+    const setupScreen = document.getElementById('setupPasscode');
+    const enterScreen = document.getElementById('enterPasscode');
+    
+    setupScreen.classList.add('hidden');
+    enterScreen.classList.remove('hidden');
+    
+    // Clear inputs
+    inputs.forEach(input => input.value = '');
+}
+
+function verifyPasscode() {
+    const inputs = document.querySelector('#enterPasscode').querySelectorAll('.passcode-input');
+    const passcode = Array.from(inputs).map(input => input.value).join('');
+    const storedPasscode = localStorage.getItem('passitPasscode');
+    
+    if (CryptoJS.SHA256(passcode).toString() === storedPasscode) {
+        document.getElementById('passcodeScreen').classList.add('hidden');
+        passcodeAttempts = 0;
+    } else {
+        passcodeAttempts++;
+        if (passcodeAttempts >= MAX_ATTEMPTS) {
+            alert('Too many failed attempts. Please reset your passcode.');
+            resetPasscode();
+        } else {
+            alert(`Invalid passcode. ${MAX_ATTEMPTS - passcodeAttempts} attempts remaining.`);
+        }
+        inputs.forEach(input => input.value = '');
+        inputs[0].focus();
+    }
+}
+
+function resetPasscode() {
+    if (confirm('Are you sure you want to reset your passcode? This will clear all saved passwords.')) {
+        localStorage.clear();
+        location.reload();
+    }
+}
+
+// Add this to your window load event listener
+window.addEventListener('load', () => {
+    initPasscode();
+    generatePassword();
+    displaySavedPasswords();
+    setupExportDropdown();
+}); 

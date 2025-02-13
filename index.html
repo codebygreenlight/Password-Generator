@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Generator</title>
+    <title>PassIT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @keyframes fadeIn {
@@ -40,8 +40,46 @@
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="bg-gradient-to-br from-gray-900 to-gray-800 min-h-screen flex items-center justify-center p-4">
-    <div class="bg-gray-800/50 backdrop-blur-sm p-8 rounded-2xl shadow-xl w-[32rem] border border-gray-700">
-        <div class="flex items-center justify-between mb-6">
+    <!-- Add this right after the body tag opens, before the main container -->
+    <div id="passcodeScreen" class="fixed inset-0 bg-gray-900 z-50 flex items-center justify-center p-4">
+        <div class="bg-gray-800/50 backdrop-blur-sm p-6 rounded-2xl shadow-xl w-[20rem] border border-gray-700">
+            <div id="setupPasscode" class="space-y-4">
+                <h2 class="text-xl font-bold text-gray-100 text-center">Setup PassIT</h2>
+                <p class="text-gray-400 text-sm text-center">Create a 4-digit passcode to secure your passwords</p>
+                <div class="flex justify-center gap-2">
+                    <input type="password" maxlength="1" class="passcode-input w-12 h-12 text-center bg-gray-900 border border-gray-700 rounded-lg text-gray-100 text-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500">
+                    <input type="password" maxlength="1" class="passcode-input w-12 h-12 text-center bg-gray-900 border border-gray-700 rounded-lg text-gray-100 text-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500">
+                    <input type="password" maxlength="1" class="passcode-input w-12 h-12 text-center bg-gray-900 border border-gray-700 rounded-lg text-gray-100 text-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500">
+                    <input type="password" maxlength="1" class="passcode-input w-12 h-12 text-center bg-gray-900 border border-gray-700 rounded-lg text-gray-100 text-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500">
+                </div>
+                <button onclick="setupPasscode()" 
+                    class="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 active:bg-purple-800 transition-all font-medium">
+                    Set Passcode
+                </button>
+            </div>
+
+            <div id="enterPasscode" class="space-y-4 hidden">
+                <h2 class="text-xl font-bold text-gray-100 text-center">Welcome Back!</h2>
+                <p class="text-gray-400 text-sm text-center">Enter your passcode to access PassIT</p>
+                <div class="flex justify-center gap-2">
+                    <input type="password" maxlength="1" class="passcode-input w-12 h-12 text-center bg-gray-900 border border-gray-700 rounded-lg text-gray-100 text-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500">
+                    <input type="password" maxlength="1" class="passcode-input w-12 h-12 text-center bg-gray-900 border border-gray-700 rounded-lg text-gray-100 text-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500">
+                    <input type="password" maxlength="1" class="passcode-input w-12 h-12 text-center bg-gray-900 border border-gray-700 rounded-lg text-gray-100 text-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500">
+                    <input type="password" maxlength="1" class="passcode-input w-12 h-12 text-center bg-gray-900 border border-gray-700 rounded-lg text-gray-100 text-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500">
+                </div>
+                <button onclick="verifyPasscode()" 
+                    class="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 active:bg-purple-800 transition-all font-medium">
+                    Unlock
+                </button>
+                <button onclick="resetPasscode()" 
+                    class="w-full text-gray-400 hover:text-purple-400 text-sm transition-colors">
+                    Forgot Passcode?
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="bg-gray-800/50 backdrop-blur-sm p-6 rounded-2xl shadow-xl w-[32rem] border border-gray-700">
+        <div class="flex items-center justify-between mb-4">
             <div class="flex items-center gap-3">
                 <div class="bg-purple-600 p-2 rounded-lg shadow-lg shadow-purple-500/20">
                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -63,14 +101,14 @@
         </div>
         
         <!-- Add this after the header and before the settings section -->
-        <div class="mb-6 bg-gray-900/30 p-4 rounded-lg border border-yellow-500/20">
-            <div class="flex items-start gap-3">
-                <svg class="w-6 h-6 text-yellow-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="mb-4 bg-gray-900/30 p-3 rounded-lg border border-yellow-500/20">
+            <div class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div>
-                    <h3 class="text-yellow-500 font-medium mb-2">Important Information</h3>
-                    <ul class="text-gray-300 text-sm space-y-2">
+                    <h3 class="text-yellow-500 font-medium mb-1 text-sm">Important Information</h3>
+                    <ul class="text-gray-300 text-xs space-y-1">
                         <li class="flex items-center gap-2">
                             <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -101,7 +139,7 @@
         </div>
 
         <!-- Settings Section (removed cloud sync) -->
-        <div class="mb-6 flex items-center justify-between">
+        <div class="mb-4 flex items-center justify-between">
             <div class="flex gap-2">
                 <div class="relative">
                     <button data-export-button
@@ -162,7 +200,7 @@
             </div>
         </div>
 
-        <div class="mb-6">
+        <div class="mb-4">
             <div class="flex items-center justify-between bg-gray-900/50 p-4 rounded-lg shadow-sm border border-gray-700 mb-2">
                 <input type="text" id="websiteInput" 
                     placeholder="Enter website (e.g., google.com)"
@@ -191,26 +229,26 @@
             </div>
         </div>
 
-        <div class="space-y-4 mb-8">
-            <div class="flex items-center justify-between bg-gray-900/30 p-4 rounded-lg transition-all hover:bg-gray-900/50">
+        <div class="space-y-2 mb-4">
+            <div class="flex items-center justify-between bg-gray-900/30 p-3 rounded-lg transition-all hover:bg-gray-900/50">
                 <label class="text-gray-300 font-medium">Password Length</label>
                 <input type="number" id="lengthInput" value="12" min="4" max="50"
                     class="w-20 p-2 border rounded-lg text-center bg-gray-800 text-gray-100 border-gray-700 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all">
             </div>
 
-            <div class="flex items-center justify-between bg-gray-900/30 p-4 rounded-lg transition-all hover:bg-gray-900/50">
+            <div class="flex items-center justify-between bg-gray-900/30 p-3 rounded-lg transition-all hover:bg-gray-900/50">
                 <label class="text-gray-300 font-medium">Include Uppercase</label>
                 <input type="checkbox" id="uppercaseCheck" checked
                     class="w-5 h-5 text-purple-500 rounded bg-gray-800 border-gray-700 focus:ring-purple-500 transition-all">
             </div>
 
-            <div class="flex items-center justify-between bg-gray-900/30 p-4 rounded-lg transition-all hover:bg-gray-900/50">
+            <div class="flex items-center justify-between bg-gray-900/30 p-3 rounded-lg transition-all hover:bg-gray-900/50">
                 <label class="text-gray-300 font-medium">Include Numbers</label>
                 <input type="checkbox" id="numbersCheck" checked
                     class="w-5 h-5 text-purple-500 rounded bg-gray-800 border-gray-700 focus:ring-purple-500 transition-all">
             </div>
 
-            <div class="flex items-center justify-between bg-gray-900/30 p-4 rounded-lg transition-all hover:bg-gray-900/50">
+            <div class="flex items-center justify-between bg-gray-900/30 p-3 rounded-lg transition-all hover:bg-gray-900/50">
                 <label class="text-gray-300 font-medium">Include Symbols</label>
                 <input type="checkbox" id="symbolsCheck" checked
                     class="w-5 h-5 text-purple-500 rounded bg-gray-800 border-gray-700 focus:ring-purple-500 transition-all">
@@ -218,7 +256,7 @@
         </div>
 
         <button onclick="generatePassword()" 
-            class="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 active:bg-purple-800 transition-all transform hover:scale-[1.02] font-medium text-lg shadow-lg shadow-purple-500/20 flex items-center justify-center gap-2">
+            class="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 active:bg-purple-800 transition-all transform hover:scale-[1.02] font-medium text-lg shadow-lg shadow-purple-500/20 flex items-center justify-center gap-2 mb-4">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
@@ -226,16 +264,24 @@
         </button>
 
         <!-- Saved Passwords Section -->
-        <div class="mt-8 border-t border-gray-700 pt-6">
-            <h2 class="text-xl font-bold text-gray-100 mb-4 flex items-center gap-2">
+        <div class="border-t border-gray-700 pt-4">
+            <h2 class="text-lg font-bold text-gray-100 mb-2 flex items-center gap-2">
                 <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8V7a4 4 0 00-8 0v4h8z" />
                 </svg>
                 Saved Passwords
             </h2>
-            <div id="savedPasswords" class="space-y-2 max-h-48 overflow-y-auto">
+            <div id="savedPasswords" class="space-y-1 max-h-32 overflow-y-auto">
                 <!-- Saved passwords will be inserted here -->
             </div>
+        </div>
+
+        <!-- Add creator signature -->
+        <div class="absolute bottom-2 right-4 text-sm text-gray-400">
+            <span class="flex items-center gap-1">
+                Created with <span class="text-red-500">❤️</span> by 
+                <a href="https://x.com/devolawale" class="text-purple-400 hover:text-purple-300 transition-colors">DevOlawale</a>
+            </span>
         </div>
     </div>
     

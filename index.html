@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        /* Custom scrollbar for dark theme */
+        #savedPasswords::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        #savedPasswords::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+        #savedPasswords::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+        
+        #savedPasswords::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+    <!-- Add Alpine.js before other scripts -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-gray-900 to-gray-800 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-gray-800/50 backdrop-blur-sm p-8 rounded-2xl shadow-xl w-[32rem] border border-gray-700">
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+                <div class="bg-purple-600 p-2 rounded-lg shadow-lg shadow-purple-500/20">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-100 flex items-center">
+                        Pass<span class="text-purple-400">IT</span>
+                    </h1>
+                    <p class="text-gray-400 text-sm">Secure Password Manager</p>
+                </div>
+            </div>
+            <div class="text-xs text-gray-500 text-right">
+                <span class="block">Version 1.0</span>
+                <span class="block">Local Storage</span>
+            </div>
+        </div>
+        
+        <!-- Add this after the header and before the settings section -->
+        <div class="mb-6 bg-gray-900/30 p-4 rounded-lg border border-yellow-500/20">
+            <div class="flex items-start gap-3">
+                <svg class="w-6 h-6 text-yellow-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                    <h3 class="text-yellow-500 font-medium mb-2">Important Information</h3>
+                    <ul class="text-gray-300 text-sm space-y-2">
+                        <li class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Passwords are stored locally in your browser only
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            Clearing browser data will delete all saved passwords
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                            </svg>
+                            Passwords are not synced between devices or browsers
+                        </li>
+                        <li class="flex items-center gap-2 text-purple-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            Tip: Use the Export feature to backup your passwords regularly
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Section (removed cloud sync) -->
+        <div class="mb-6 flex items-center justify-between">
+            <div class="flex gap-2">
+                <div class="relative">
+                    <button data-export-button
+                        class="px-3 py-1.5 text-gray-300 text-sm hover:text-purple-400 transition-colors rounded-lg hover:bg-gray-800 flex items-center gap-1"
+                        title="Export Passwords">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                        Export
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    
+                    <div data-export-dropdown
+                        class="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 divide-y divide-gray-700 hidden">
+                        <div class="py-1">
+                            <button onclick="exportPasswords('xlsx')" 
+                                class="group flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-purple-400 w-full">
+                                <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                Export as Excel
+                            </button>
+                            <button onclick="exportPasswords('pdf')" 
+                                class="group flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-purple-400 w-full">
+                                <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                                Export as PDF
+                            </button>
+                            <button onclick="exportPasswords('json')" 
+                                class="group flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-purple-400 w-full">
+                                <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                                </svg>
+                                Export as JSON
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <label class="px-3 py-1.5 text-gray-300 text-sm hover:text-purple-400 transition-colors rounded-lg hover:bg-gray-800 flex items-center gap-1 cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Import
+                    <input type="file" accept=".json" onchange="importPasswords(this)" class="hidden">
+                </label>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="toggleEncryption()" id="encryptionStatus"
+                    class="px-3 py-1.5 text-gray-300 text-sm hover:text-purple-400 transition-colors rounded-lg hover:bg-gray-800 flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <span id="encryptionText">Encryption Off</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="mb-6">
+            <div class="flex items-center justify-between bg-gray-900/50 p-4 rounded-lg shadow-sm border border-gray-700 mb-2">
+                <input type="text" id="websiteInput" 
+                    placeholder="Enter website (e.g., google.com)"
+                    class="bg-transparent outline-none flex-1 text-gray-100 text-lg border-b border-transparent focus:border-purple-500 transition-all mr-2 placeholder-gray-500">
+            </div>
+            <div class="flex items-center justify-between bg-gray-900/50 p-4 rounded-lg shadow-sm border border-gray-700">
+                <input type="text" id="passwordOutput" 
+                    class="bg-transparent outline-none flex-1 text-gray-100 text-lg font-mono" 
+                    readonly>
+                <div class="flex gap-2">
+                    <button onclick="savePassword()" 
+                        class="p-2 text-gray-400 hover:text-green-400 transition-colors rounded-lg hover:bg-gray-800"
+                        title="Save Password">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                        </svg>
+                    </button>
+                    <button onclick="copyToClipboard()" 
+                        class="p-2 text-gray-400 hover:text-purple-400 transition-colors rounded-lg hover:bg-gray-800"
+                        title="Copy Password">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-4 mb-8">
+            <div class="flex items-center justify-between bg-gray-900/30 p-4 rounded-lg transition-all hover:bg-gray-900/50">
+                <label class="text-gray-300 font-medium">Password Length</label>
+                <input type="number" id="lengthInput" value="12" min="4" max="50"
+                    class="w-20 p-2 border rounded-lg text-center bg-gray-800 text-gray-100 border-gray-700 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all">
+            </div>
+
+            <div class="flex items-center justify-between bg-gray-900/30 p-4 rounded-lg transition-all hover:bg-gray-900/50">
+                <label class="text-gray-300 font-medium">Include Uppercase</label>
+                <input type="checkbox" id="uppercaseCheck" checked
+                    class="w-5 h-5 text-purple-500 rounded bg-gray-800 border-gray-700 focus:ring-purple-500 transition-all">
+            </div>
+
+            <div class="flex items-center justify-between bg-gray-900/30 p-4 rounded-lg transition-all hover:bg-gray-900/50">
+                <label class="text-gray-300 font-medium">Include Numbers</label>
+                <input type="checkbox" id="numbersCheck" checked
+                    class="w-5 h-5 text-purple-500 rounded bg-gray-800 border-gray-700 focus:ring-purple-500 transition-all">
+            </div>
+
+            <div class="flex items-center justify-between bg-gray-900/30 p-4 rounded-lg transition-all hover:bg-gray-900/50">
+                <label class="text-gray-300 font-medium">Include Symbols</label>
+                <input type="checkbox" id="symbolsCheck" checked
+                    class="w-5 h-5 text-purple-500 rounded bg-gray-800 border-gray-700 focus:ring-purple-500 transition-all">
+            </div>
+        </div>
+
+        <button onclick="generatePassword()" 
+            class="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 active:bg-purple-800 transition-all transform hover:scale-[1.02] font-medium text-lg shadow-lg shadow-purple-500/20 flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Generate Password
+        </button>
+
+        <!-- Saved Passwords Section -->
+        <div class="mt-8 border-t border-gray-700 pt-6">
+            <h2 class="text-xl font-bold text-gray-100 mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                Saved Passwords
+            </h2>
+            <div id="savedPasswords" class="space-y-2 max-h-48 overflow-y-auto">
+                <!-- Saved passwords will be inserted here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add CryptoJS library for encryption -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 

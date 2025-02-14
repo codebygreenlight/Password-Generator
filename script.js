@@ -465,14 +465,31 @@ function verifyPasscode() {
         passcodeAttempts = 0;
     } else {
         passcodeAttempts++;
+        const container = document.querySelector('#enterPasscode .flex.justify-center');
+        
+        // Add shake animation
+        container.classList.add('shake');
+        
+        // Remove animation class after it completes
+        setTimeout(() => {
+            container.classList.remove('shake');
+        }, 500);
+        
+        // Clear inputs and dots
+        inputs.forEach(input => {
+            input.value = '';
+            input.previousElementSibling.classList.remove('has-value');
+        });
+        
+        // Focus first input
+        inputs[0].focus();
+        
         if (passcodeAttempts >= MAX_ATTEMPTS) {
             alert('Too many failed attempts. Please reset your passcode.');
             resetPasscode();
         } else {
             alert(`Invalid passcode. ${MAX_ATTEMPTS - passcodeAttempts} attempts remaining.`);
         }
-        inputs.forEach(input => input.value = '');
-        inputs[0].focus();
     }
 }
 

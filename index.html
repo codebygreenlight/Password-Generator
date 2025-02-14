@@ -59,18 +59,17 @@
             color: #fff;
         }
         
-        /* Remove the default ::after content */
-        .passcode-dots::after {
-            content: '';
-        }
-        
         /* Only show dot when input has value */
         .passcode-dots.has-value::after {
             content: '•';
+            font-size: 2.5rem;
+            line-height: 1;
         }
         
         .passcode-wrapper {
             position: relative;
+            -webkit-user-select: none;
+            user-select: none;
         }
         
         .passcode-wrapper input {

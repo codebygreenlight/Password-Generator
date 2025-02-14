@@ -399,7 +399,11 @@ function setupPasscodeInputs() {
     inputs.forEach((input, index) => {
         input.addEventListener('input', (e) => {
             // Only allow numbers
-            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            e.target.value = e.target.value.replace(/[^0-9]/g,'').slice(0,1);
+            
+            // Toggle dot visibility
+            const dot = e.target.previousElementSibling;
+            dot.classList.toggle('has-value', e.target.value.length > 0);
             
             if (e.target.value.length === 1) {
                 if (index < inputs.length - 1) {
@@ -418,6 +422,9 @@ function setupPasscodeInputs() {
 
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                // Remove dot when backspacing
+                const dot = e.target.previousElementSibling;
+                dot.classList.remove('has-value');
                 inputs[index - 1].focus();
             }
         });

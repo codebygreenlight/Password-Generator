@@ -50,6 +50,38 @@
             -webkit-appearance: none;
             margin: 0;
         }
+        
+        .passcode-dots {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            color: #fff;
+        }
+        
+        /* Remove the default ::after content */
+        .passcode-dots::after {
+            content: '';
+        }
+        
+        /* Only show dot when input has value */
+        .passcode-dots.has-value::after {
+            content: '•';
+        }
+        
+        .passcode-wrapper {
+            position: relative;
+        }
+        
+        .passcode-wrapper input {
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -65,34 +97,46 @@
                 <h2 class="text-xl font-bold text-gray-100 text-center">Setup PassIT</h2>
                 <p class="text-gray-400 text-sm text-center">Create a 4-digit passcode to secure your passwords</p>
                 <div class="flex justify-center gap-2">
-                    <input type="number" 
-                        maxlength="1" 
-                        inputmode="numeric"
-                        pattern="[0-9]*"
-                        class="passcode-input secure-input w-12 h-12 text-center bg-gray-900 border border-gray-700 rounded-lg text-gray-100 text-2xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500"
-                        autocomplete="off"
-                        oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,1)">
-                    <input type="number" 
-                        maxlength="1" 
-                        inputmode="numeric"
-                        pattern="[0-9]*"
-                        class="passcode-input secure-input w-12 h-12 text-center bg-gray-900 border border-gray-700 rounded-lg text-gray-100 text-2xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500"
-                        autocomplete="off"
-                        oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,1)">
-                    <input type="number" 
-                        maxlength="1" 
-                        inputmode="numeric"
-                        pattern="[0-9]*"
-                        class="passcode-input secure-input w-12 h-12 text-center bg-gray-900 border border-gray-700 rounded-lg text-gray-100 text-2xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500"
-                        autocomplete="off"
-                        oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,1)">
-                    <input type="number" 
-                        maxlength="1" 
-                        inputmode="numeric"
-                        pattern="[0-9]*"
-                        class="passcode-input secure-input w-12 h-12 text-center bg-gray-900 border border-gray-700 rounded-lg text-gray-100 text-2xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500"
-                        autocomplete="off"
-                        oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,1)">
+                    <div class="passcode-wrapper w-12 h-12 bg-gray-900 border border-gray-700 rounded-lg focus-within:border-purple-500 focus-within:ring-2 focus-within:ring-purple-500">
+                        <div class="passcode-dots w-full h-full"></div>
+                        <input type="number"
+                            maxlength="1"
+                            inputmode="numeric"
+                            pattern="[0-9]*"
+                            class="passcode-input"
+                            autocomplete="off"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,1)">
+                    </div>
+                    <div class="passcode-wrapper w-12 h-12 bg-gray-900 border border-gray-700 rounded-lg focus-within:border-purple-500 focus-within:ring-2 focus-within:ring-purple-500">
+                        <div class="passcode-dots w-full h-full"></div>
+                        <input type="number"
+                            maxlength="1"
+                            inputmode="numeric"
+                            pattern="[0-9]*"
+                            class="passcode-input"
+                            autocomplete="off"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,1)">
+                    </div>
+                    <div class="passcode-wrapper w-12 h-12 bg-gray-900 border border-gray-700 rounded-lg focus-within:border-purple-500 focus-within:ring-2 focus-within:ring-purple-500">
+                        <div class="passcode-dots w-full h-full"></div>
+                        <input type="number"
+                            maxlength="1"
+                            inputmode="numeric"
+                            pattern="[0-9]*"
+                            class="passcode-input"
+                            autocomplete="off"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,1)">
+                    </div>
+                    <div class="passcode-wrapper w-12 h-12 bg-gray-900 border border-gray-700 rounded-lg focus-within:border-purple-500 focus-within:ring-2 focus-within:ring-purple-500">
+                        <div class="passcode-dots w-full h-full"></div>
+                        <input type="number"
+                            maxlength="1"
+                            inputmode="numeric"
+                            pattern="[0-9]*"
+                            class="passcode-input"
+                            autocomplete="off"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,1)">
+                    </div>
                 </div>
                 <button onclick="setupPasscode()" 
                     class="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 active:bg-purple-800 transition-all font-medium">
@@ -104,34 +148,46 @@
                 <h2 class="text-xl font-bold text-gray-100 text-center">Welcome Back!</h2>
                 <p class="text-gray-400 text-sm text-center">Enter your passcode to access PassIT</p>
                 <div class="flex justify-center gap-2">
-                    <input type="number" 
-                        maxlength="1" 
-                        inputmode="numeric"
-                        pattern="[0-9]*"
-                        class="passcode-input secure-input w-12 h-12 text-center bg-gray-900 border border-gray-700 rounded-lg text-gray-100 text-2xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500"
-                        autocomplete="off"
-                        oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,1)">
-                    <input type="number" 
-                        maxlength="1" 
-                        inputmode="numeric"
-                        pattern="[0-9]*"
-                        class="passcode-input secure-input w-12 h-12 text-center bg-gray-900 border border-gray-700 rounded-lg text-gray-100 text-2xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500"
-                        autocomplete="off"
-                        oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,1)">
-                    <input type="number" 
-                        maxlength="1" 
-                        inputmode="numeric"
-                        pattern="[0-9]*"
-                        class="passcode-input secure-input w-12 h-12 text-center bg-gray-900 border border-gray-700 rounded-lg text-gray-100 text-2xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500"
-                        autocomplete="off"
-                        oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,1)">
-                    <input type="number" 
-                        maxlength="1" 
-                        inputmode="numeric"
-                        pattern="[0-9]*"
-                        class="passcode-input secure-input w-12 h-12 text-center bg-gray-900 border border-gray-700 rounded-lg text-gray-100 text-2xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500"
-                        autocomplete="off"
-                        oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,1)">
+                    <div class="passcode-wrapper w-12 h-12 bg-gray-900 border border-gray-700 rounded-lg focus-within:border-purple-500 focus-within:ring-2 focus-within:ring-purple-500">
+                        <div class="passcode-dots w-full h-full"></div>
+                        <input type="number"
+                            maxlength="1"
+                            inputmode="numeric"
+                            pattern="[0-9]*"
+                            class="passcode-input"
+                            autocomplete="off"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,1)">
+                    </div>
+                    <div class="passcode-wrapper w-12 h-12 bg-gray-900 border border-gray-700 rounded-lg focus-within:border-purple-500 focus-within:ring-2 focus-within:ring-purple-500">
+                        <div class="passcode-dots w-full h-full"></div>
+                        <input type="number"
+                            maxlength="1"
+                            inputmode="numeric"
+                            pattern="[0-9]*"
+                            class="passcode-input"
+                            autocomplete="off"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,1)">
+                    </div>
+                    <div class="passcode-wrapper w-12 h-12 bg-gray-900 border border-gray-700 rounded-lg focus-within:border-purple-500 focus-within:ring-2 focus-within:ring-purple-500">
+                        <div class="passcode-dots w-full h-full"></div>
+                        <input type="number"
+                            maxlength="1"
+                            inputmode="numeric"
+                            pattern="[0-9]*"
+                            class="passcode-input"
+                            autocomplete="off"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,1)">
+                    </div>
+                    <div class="passcode-wrapper w-12 h-12 bg-gray-900 border border-gray-700 rounded-lg focus-within:border-purple-500 focus-within:ring-2 focus-within:ring-purple-500">
+                        <div class="passcode-dots w-full h-full"></div>
+                        <input type="number"
+                            maxlength="1"
+                            inputmode="numeric"
+                            pattern="[0-9]*"
+                            class="passcode-input"
+                            autocomplete="off"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,1)">
+                    </div>
                 </div>
                 <button onclick="verifyPasscode()" 
                     class="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 active:bg-purple-800 transition-all font-medium">

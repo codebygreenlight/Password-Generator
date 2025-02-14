@@ -184,9 +184,9 @@ function escapeHtml(unsafe) {
 
 // Generate an initial password when the page loads
 window.addEventListener('load', () => {
+    initPasscode();
     generatePassword();
     displaySavedPasswords();
-    setupExportDropdown();
 });
 
 // Encryption key management
@@ -226,41 +226,10 @@ function decryptData(data) {
 }
 
 // Export/Import functionality
-function exportPasswords(format = 'json') {
+function exportPasswords() {
     const savedPasswords = JSON.parse(localStorage.getItem('savedPasswords') || '[]');
     const date = new Date().toISOString().split('T')[0];
     
-    switch (format) {
-        case 'xlsx':
-            exportToExcel(savedPasswords, date);
-            break;
-        case 'pdf':
-            exportToPDF(savedPasswords, date);
-            break;
-        case 'json':
-            exportToJSON(savedPasswords, date);
-            break;
-    }
-}
-
-function exportToExcel(passwords, date) {
-    // Prepare data for Excel
-    const data = passwords.map(entry => ({
-        Website: entry.website,
-        Password: entry.password,
-        'Date Added': entry.date
-    }));
-    
-    // Create worksheet
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Passwords");
-    
-    // Save file
-    XLSX.writeFile(wb, `passwords_${date}.xlsx`);
-}
-
-function exportToPDF(passwords, date) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     
@@ -271,7 +240,7 @@ function exportToPDF(passwords, date) {
     doc.text(`Exported on ${date}`, 14, 25);
     
     // Prepare data for table
-    const tableData = passwords.map(entry => [
+    const tableData = savedPasswords.map(entry => [
         entry.website,
         entry.password,
         entry.date
@@ -300,20 +269,6 @@ function exportToPDF(passwords, date) {
     
     // Save file
     doc.save(`passwords_${date}.pdf`);
-}
-
-function exportToJSON(passwords, date) {
-    const dataStr = JSON.stringify(passwords, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `passwords_${date}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
 }
 
 function importPasswords(input) {
@@ -416,23 +371,6 @@ function displaySavedPasswords() {
         .join('');
 }
 
-function setupExportDropdown() {
-    const button = document.querySelector('[data-export-button]');
-    const dropdown = document.querySelector('[data-export-dropdown]');
-    
-    button.addEventListener('click', () => {
-        const isOpen = dropdown.classList.contains('hidden');
-        dropdown.classList.toggle('hidden');
-    });
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!button.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.add('hidden');
-        }
-    });
-}
-
 // Add these at the start of the file
 let passcodeAttempts = 0;
 const MAX_ATTEMPTS = 3;
@@ -460,9 +398,20 @@ function setupPasscodeInputs() {
     
     inputs.forEach((input, index) => {
         input.addEventListener('input', (e) => {
+            // Only allow numbers
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            
             if (e.target.value.length === 1) {
                 if (index < inputs.length - 1) {
+                    // Move to next input
                     inputs[index + 1].focus();
+                } else {
+                    // Last input filled, check if it's the enter screen
+                    const isEnterScreen = input.closest('#enterPasscode');
+                    if (isEnterScreen) {
+                        // Automatically verify passcode
+                        verifyPasscode();
+                    }
                 }
             }
         });
@@ -525,12 +474,4 @@ function resetPasscode() {
         localStorage.clear();
         location.reload();
     }
-}
-
-// Add this to your window load event listener
-window.addEventListener('load', () => {
-    initPasscode();
-    generatePassword();
-    displaySavedPasswords();
-    setupExportDropdown();
-}); 
+} 
